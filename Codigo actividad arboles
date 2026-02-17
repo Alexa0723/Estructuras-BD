@@ -1,0 +1,75 @@
+16 feb
+import hashlib
+
+def hash_data(data):
+    return hashlib.sha256(data.encode()).hexdigest()
+
+texto1 = "hola"
+texto2 = "Hola"
+texto3 = "chao"
+texto4 = "Chao"
+
+t1 = hash_data(texto1)
+t2 = hash_data(texto2)
+t3 = hash_data(texto3)
+t4 = hash_data(texto4)
+
+concatenado1 = hash_data(t1 + t2)
+concatenado2 = hash_data(t3 + t4)
+
+hash_padre = hash_data(concatenado1 + concatenado2)
+
+print(hash_padre)
+
+17 feb
+
+import hashlib
+
+def hash_data(data):
+    return hashlib.sha256(data.encode()).hexdigest()
+
+def merkle_root(data_list):
+    
+    nivel = [hash_data(d) for d in data_list]
+    
+    while len(nivel) > 1:
+        nuevo_nivel = []
+        
+        for i in range(0, len(nivel), 2):
+            
+            if i + 1 < len(nivel):
+                combinado = nivel[i] + nivel[i+1]
+                nuevo_nivel.append(hash_data(combinado))
+            #impar
+            else:
+                nuevo_nivel.append(nivel[i])
+        
+        nivel = nuevo_nivel
+    
+    return nivel[0]
+
+while True:
+    try:
+        n = int(input("¿Cuántos textos quieres ingresar? "))
+        if n > 0:
+            break
+        else:
+            print("Debe ser mayor que 0.")
+    except ValueError:
+        print("Ingrese un número válido.")
+
+datos = []
+
+for i in range(n):
+    texto = input(f"Ingrese el texto {i+1}: ")
+    datos.append(texto)
+
+print("Hashes individuales:")
+for texto in datos:
+    print(f"{texto} → {hash_data(texto)}")
+
+
+root = merkle_root(datos)
+
+print("Merkle Root:")
+print(root)
